@@ -1,0 +1,27 @@
+{
+    "name": "atukai/at-log",
+    "description": "General logger module for ZF2",
+    "type": "library",
+    "keywords": [
+        "log", "logger", "AtLog", "atukai", "at", "zf2"
+    ],
+    "homepage": "https://github.com/atukai/AtLog",
+    "authors": [
+        {
+            "name": "Alexander Tukai",
+            "email": "atukai@gmail.com",
+            "homepage": "https://github.com/atukai"
+        }
+    ],
+    "require": {
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "AtLog\\": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
