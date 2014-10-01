@@ -16,6 +16,10 @@
     "require": {
         "zendframework/zendframework": "2.*"
     },
+    "suggest" : {
+        "firephp/firephp-core": "To enable logging with Fire-PHP",
+        "chromephp/chromephp": "To enable logging with Chrome-PHP"
+    },
     "autoload": {
         "psr-0": {
             "AtLog\\": "src/"
