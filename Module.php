@@ -25,7 +25,7 @@ class Module
 
     public function getServiceConfig()
     {
-        return include __DIR__ . '/config/services.config.php';
+        return include __DIR__ . '/config/service.config.php';
     }
 
     public function onBootstrap(MvcEvent $e)
@@ -35,17 +35,16 @@ class Module
         $eventManager = $app->getEventManager();
 
         $logger = $serviceManager->get('at_logger');
-        //Logger::registerErrorHandler($logger);
-        Logger::registerExceptionHandler($logger);
-        Logger::registerFatalErrorShutdownFunction($logger);
-
         $eventManager->attach('dispatch.error', function ($event) use ($serviceManager, $logger) {
             $exception = $event->getResult()->exception;
             if (!$exception) {
                 return;
             }
 
-            $logger->crit($exception);
+            $logger->crit($exception, array(
+                'uri' => $serviceManager->get('Request')->getRequestUri(),
+                'ip' => ip2long($serviceManager->get('Request')->getServer('REMOTE_ADDR')),
+            ));
         });
 
         // Log events

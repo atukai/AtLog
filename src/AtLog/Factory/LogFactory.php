@@ -14,12 +14,27 @@ class LogFactory implements FactoryInterface
         $appConfig = $serviceLocator->get('Config');
         $logConfig = $appConfig['at_log'];
 
-        $logger = new Logger();
-        $logger->addWriter(new Db(
-            $serviceLocator->get('Zend\Db\Adapter\Adapter'),
-            $logConfig['writers']['db']['tableName'],
-            $logConfig['writers']['db']['columnMap']
-        ));
+        $logger = new Logger($logConfig['register_handlers']);
+        $plugins = $logger->getWriterPluginManager();
+
+        foreach ($logConfig['writers'] as $name => $options) {
+            if (!$options['enabled']) {
+                continue;
+            }
+            unset($options['enabled']);
+
+            if ($name == 'db') {
+                $writer = new Db(
+                    $serviceLocator->get('Zend\Db\Adapter\Adapter'),
+                    $logConfig['writers']['db']['table'],
+                    $logConfig['writers']['db']['columnMap']
+                );
+            } else {
+                $writer = $plugins->get($name, $options);
+            }
+
+            $logger->addWriter($writer);
+        }
 
         return $logger;
     }
