@@ -2,7 +2,6 @@
 
 namespace AtLog;
 
-use Zend\Log\Logger;
 use Zend\Mvc\MvcEvent;
 
 class Module
@@ -35,30 +34,39 @@ class Module
         $eventManager = $app->getEventManager();
 
         $logger = $serviceManager->get('at_logger');
-        $eventManager->attach('dispatch.error', function ($event) use ($serviceManager, $logger) {
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, function ($event) use ($serviceManager, $logger) {
+            /* @var \Exception */
             $exception = $event->getResult()->exception;
+
             if (!$exception) {
                 return;
             }
 
-            $logger->crit($exception, array(
-                'uri' => $serviceManager->get('Request')->getRequestUri(),
-                'ip' => ip2long($serviceManager->get('Request')->getServer('REMOTE_ADDR')),
-            ));
+            do {
+                $logger->err($exception->getMessage(), array(
+                    'uri'   => $serviceManager->get('Request')->getRequestUri(),
+                    'ip'    => sprintf('%u', ip2long($serviceManager->get('Request')->getServer('REMOTE_ADDR'))),
+                    'file'  => $exception->getFile() . ' at line ' . $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
+                ));
+            }
+            while($exception = $exception->getPrevious());
         });
 
-        // Log events
-        $eventManager->attach('*',
+        /*// Log events
+        $sem = $eventManager->getSharedManager();
+        $sem->attach('*', '*',
             function ($e)
             {
                 $event = $e->getName();
                 $target = get_class($e->getTarget());
                 $params = $e->getParams();
                 $output = sprintf(
-                    'Event "%s" was triggered on target "%s", with parameters %s\r\n',
+                    'Event "%s" was triggered on target "%s", with parameters %s\n',
                     $event,
                     $target,
-                    json_encode($params));
+                    json_encode($params)
+                );
 
                 file_put_contents(APPLICATION_PATH . '/data/logs/events.txt', $output, FILE_APPEND);
 
@@ -66,6 +74,6 @@ class Module
                 // chain triggering session.validate listeners
                 return true;
             }
-        );
+        );*/
     }
 }

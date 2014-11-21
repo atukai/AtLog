@@ -8,18 +8,20 @@ return array(
             'fatal_error_shutdownfunction' => true,
         ),
 
-        'writers' => array(
+        'writers'           => array(
             'db'        => array(
-                'enabled' => true,
-                'table'   => 'logs',
-                'columnMap'  => array(
+                'enabled'   => true,
+                'table'     => 'logs',
+                'columnMap' => array(
                     'timestamp'    => 'date',
                     'priority'     => 'priority',
                     'priorityName' => 'priorityName',
                     'message'      => 'message',
                     'extra'        => array(
-                        'uri' => 'uri',
-                        'ip'  => 'ip'
+                        'uri'   => 'uri',
+                        'ip'    => 'ip',
+                        'file'  => 'file',
+                        'trace' => 'trace',
                     ),
                 )
             ),
@@ -28,7 +30,7 @@ return array(
                 //'check_dependency' => 'FirePHP',
             ),
             'chromephp' => array(
-                'enabled' => true,
+                'enabled' => false,
                 //'check_dependency' => 'ChromePhp',
             ),
             'stream'    => array(
@@ -36,7 +38,7 @@ return array(
                 'fingers_crossed'          => true,
                 'fingers_crossed_priority' => \Zend\Log\Logger::ERR,
                 'priority'                 => \Zend\Log\Logger::INFO,
-                'stream'                   => APPLICATION_PATH . '/data/logs/application.log',
+                'stream'                   => $_SERVER['DOCUMENT_ROOT'] . '/../data/logs/application.log',
             ),
         )
     ),
