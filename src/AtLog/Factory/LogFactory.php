@@ -11,24 +11,23 @@ class LogFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $appConfig = $serviceLocator->get('Config');
-        $logConfig = $appConfig['at_log'];
+        $config = $serviceLocator->get('Config')['at_log'];
 
-        $logger = new Logger($logConfig['register_handlers']);
+        $logger = new Logger($config['register_handlers']);
         $plugins = $logger->getWriterPluginManager();
 
-        foreach ($logConfig['writers'] as $name => $options) {
+        foreach ($config['writers'] as $name => $options) {
             if (!$options['enabled']) {
                 continue;
             }
-            unset($options['enabled']);
 
             if ($name == 'db') {
                 $writer = new Db(
                     $serviceLocator->get('Zend\Db\Adapter\Adapter'),
-                    $logConfig['writers']['db']['table'],
-                    $logConfig['writers']['db']['columnMap']
+                    $config['writers']['db']['table'],
+                    $config['writers']['db']['columnMap']
                 );
+                $writer->setFormatter(new \Zend\Log\Formatter\Db('Y-m-d H:i:s'));
             } else {
                 $writer = $plugins->get($name, $options);
             }
