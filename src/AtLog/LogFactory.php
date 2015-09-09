@@ -1,6 +1,6 @@
 <?php
 
-namespace AtLog\Factory;
+namespace AtLog;
 
 use Zend\Log\Logger;
 use Zend\Log\Writer\Db;

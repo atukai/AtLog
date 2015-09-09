@@ -2,6 +2,6 @@
 
 return array(
     'factories' => array(
-        'at_logger' => 'AtLog\Factory\LogFactory',
+        'at_logger' => 'AtLog\LogFactory',
     ),
 );
