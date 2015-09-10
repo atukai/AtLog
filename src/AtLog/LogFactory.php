@@ -9,6 +9,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class LogFactory implements FactoryInterface
 {
+    /**
+     * @param ServiceLocatorInterface $serviceLocator
+     * @return Logger
+     */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config')['at_log'];
