@@ -30,10 +30,9 @@ class Module
     public function onBootstrap(MvcEvent $e)
     {
         $app = $e->getApplication();
-        $serviceManager = $app->getServiceManager();
-        $logger = $serviceManager->get('at_logger');
+        $logger = $app->getServiceManager()->get('at_logger');
 
-        $app->getEventManager()->attach(MvcEvent::EVENT_DISPATCH_ERROR, function ($event) use ($serviceManager, $logger) {
+        $app->getEventManager()->attach(MvcEvent::EVENT_DISPATCH_ERROR, function ($event) use ($logger) {
             /* @var \Exception */
             $exception = $event->getResult()->exception;
 
@@ -41,10 +40,16 @@ class Module
                 return;
             }
 
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $clientIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } else {
+                $clientIp = $_SERVER['REMOTE_ADDR'];
+            }
+
             do {
                 $logger->err($exception->getMessage(), [
-                    'uri'   => $serviceManager->get('Request')->getRequestUri(),
-                    'ip'    => sprintf('%u', ip2long($serviceManager->get('Request')->getServer('REMOTE_ADDR'))),
+                    'uri'   => $_SERVER['REQUEST_URI'],
+                    'ip'    => sprintf('%u', ip2long($clientIp)),
                     'file'  => $exception->getFile() . ' at line ' . $exception->getLine(),
                 ]);
             } while ($exception = $exception->getPrevious());
