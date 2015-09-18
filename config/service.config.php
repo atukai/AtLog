@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'factories' => array(
-        'at_logger' => 'AtLog\LogFactory',
-    ),
-);
+return [
+    'factories' => [
+        'at_log' => 'AtLog\LogFactory',
+    ],
+];
