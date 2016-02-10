@@ -26,17 +26,12 @@ class LogFactory implements FactoryInterface
             }
 
             if ($name === 'db') {
-                try {
-                    $dbAdapter = $serviceLocator->get('Zend\Db\Adapter\Adapter');
-                    $writer = new Db(
-                        $dbAdapter,
-                        $config['writers']['db']['table'],
-                        $config['writers']['db']['columnMap']
-                    );
-                    $writer->setFormatter(new \Zend\Log\Formatter\Db('Y-m-d H:i:s'));
-                } catch (\Exception $e) {
-
-                }
+                $writer = new Db(
+                    $serviceLocator->get('Zend\Db\Adapter\Adapter'),
+                    $config['writers']['db']['table'],
+                    $config['writers']['db']['columnMap']
+                );
+                $writer->setFormatter(new \Zend\Log\Formatter\Db('Y-m-d H:i:s'));
             } else {
                 $writer = $plugins->get($name, $options);
             }
