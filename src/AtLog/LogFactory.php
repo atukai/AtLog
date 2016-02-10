@@ -15,7 +15,7 @@ class LogFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->get('Config')['at_log'];
+        $config = $serviceLocator->get('config')['at_log'];
 
         $logger = new Logger($config['register_handlers']);
         $plugins = $logger->getWriterPluginManager();
@@ -25,13 +25,18 @@ class LogFactory implements FactoryInterface
                 continue;
             }
 
-            if ($name == 'db') {
-                $writer = new Db(
-                    $serviceLocator->get('Zend\Db\Adapter\Adapter'),
-                    $config['writers']['db']['table'],
-                    $config['writers']['db']['columnMap']
-                );
-                $writer->setFormatter(new \Zend\Log\Formatter\Db('Y-m-d H:i:s'));
+            if ($name === 'db') {
+                try {
+                    $dbAdapter = $serviceLocator->get('Zend\Db\Adapter\Adapter');
+                    $writer = new Db(
+                        $dbAdapter,
+                        $config['writers']['db']['table'],
+                        $config['writers']['db']['columnMap']
+                    );
+                    $writer->setFormatter(new \Zend\Log\Formatter\Db('Y-m-d H:i:s'));
+                } catch (\Exception $e) {
+
+                }
             } else {
                 $writer = $plugins->get($name, $options);
             }
